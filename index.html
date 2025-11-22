@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini To-Do</title>
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+.container {
+  background: white;
+  padding: 30px;
+  border-radius: 15px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+.input-box {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+input {
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+}
+input:focus {
+  border-color: #764ba2;
+}
+#task {
+  flex: 1;
+}
+button {
+  padding: 10px 20px;
+  background: #764ba2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+button:hover {
+  background: #667eea;
+}
+ul {
+  list-style: none;
+}
+li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: #f5f5f5;
+  border-radius: 8px;
+}
+li.done {
+  background: #d4edda;
+  text-decoration: line-through;
+  color: #888;
+}
+.delete {
+  background: #ff4d4d;
+  padding: 5px 12px;
+  font-size: 12px;
+}
+.delete:hover {
+  background: #cc0000;
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Mini To-Do</h1>
+  <div class="input-box">
+    <input type="text" id="task" placeholder="Görev ekle...">
+    <button onclick="addTask()">Ekle</button>
+  </div>
+  <ul id="list"></ul>
+  <p style="text-align:center; margin-top:20px; color:#999; font-size:12px;">made by @seneshakki</p>
+</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+function render() {
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+  tasks.forEach((task, i) => {
+    const li = document.createElement('li');
+    if(task.done) li.className = 'done';
+    li.innerHTML = `
+      <span onclick="toggle(${i})" style="cursor:pointer; flex:1">${task.text}</span>
+      <button class="delete" onclick="remove(${i})">Sil</button>
+    `;
+    list.appendChild(li);
+  });
+}
+
+function addTask() {
+  const input = document.getElementById('task');
+  const text = input.value.trim();
+  if(!text) return;
+  tasks.push({ text, done: false });
+  input.value = '';
+  save();
+  render();
+}
+
+function toggle(i) {
+  tasks[i].done = !tasks[i].done;
+  save();
+  render();
+}
+
+function remove(i) {
+  tasks.splice(i, 1);
+  save();
+  render();
+}
+
+function save() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+document.getElementById('task').addEventListener('keypress', e => {
+  if(e.key === 'Enter') addTask();
+});
+
+render();
+</script>
+</body>
+</html>
